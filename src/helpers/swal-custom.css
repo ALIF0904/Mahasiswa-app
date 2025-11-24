@@ -1,0 +1,29 @@
+.swal2-confirm-custom,
+.swal2-cancel-custom {
+  min-width: 100px;
+  padding: 8px 20px;
+  font-size: 14px;
+  font-weight: 600;
+  border: none;
+  border-radius: 6px;
+  transition: 0.2s;
+  margin: 0 6px;
+}
+
+.swal2-confirm-custom {
+  background-color: #2563eb; /* biru */
+  color: white;
+}
+
+.swal2-confirm-custom:hover {
+  background-color: #1d4ed8;
+}
+
+.swal2-cancel-custom {
+  background-color: #dc2626; /* merah */
+  color: white;
+}
+
+.swal2-cancel-custom:hover {
+  background-color: #b91c1c;
+}

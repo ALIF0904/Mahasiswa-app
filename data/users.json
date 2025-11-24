@@ -1,0 +1,16 @@
+[
+  {
+    "id": 1,
+    "email": "admin@gmail.com",
+    "password": "1234",
+    "role": "admin",
+    "name": "Admin Utama"
+  },
+  {
+    "id": 2,
+    "email": "mahasiswa@gmail.com",
+    "password": "1234",
+    "role": "mahasiswa",
+    "name": "Mahasiswa 1"
+  }
+]

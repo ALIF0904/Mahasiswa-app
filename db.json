@@ -1,0 +1,45 @@
+{
+  "users": [
+    {
+      "id": 1,
+      "username": "admin",
+      "password": "123",
+      "role": "admin"
+    },
+    {
+      "id": 2,
+      "username": "dosen1",
+      "password": "123",
+      "role": "dosen"
+    },
+    {
+      "id": 3,
+      "username": "mahasiswa1",
+      "password": "123",
+      "role": "mahasiswa"
+    }
+  ],
+
+  "roles": [
+    {
+      "id": 1,
+      "name": "admin",
+      "permissions": [
+        "manage_users",
+        "manage_dosen",
+        "manage_mk",
+        "view_dashboard"
+      ]
+    },
+    {
+      "id": 2,
+      "name": "dosen",
+      "permissions": ["view_dashboard"]
+    },
+    {
+      "id": 3,
+      "name": "mahasiswa",
+      "permissions": ["view_dashboard"]
+    }
+  ]
+}

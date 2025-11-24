@@ -1,0 +1,31 @@
+@import "tailwindcss";
+/* ======================= */
+/* 🔔 Styling SweetAlert2  */
+/* ======================= */
+.swal2-confirm-custom,
+.swal2-cancel-custom {
+  padding: 0.6em 1.5em !important;
+  font-size: 0.95rem !important;
+  border-radius: 6px !important;
+  font-weight: 600 !important;
+  min-width: 100px !important;
+  margin: 0 5px !important; /* ✅ beri jarak antar tombol */
+}
+
+.swal2-confirm-custom {
+  background-color: #2563eb !important; /* 🟦 Biru */
+  color: #fff !important;
+}
+
+.swal2-confirm-custom:hover {
+  background-color: #1e40af !important;
+}
+
+.swal2-cancel-custom {
+  background-color: #dc2626 !important; /* 🔴 Merah */
+  color: #fff !important;
+}
+
+.swal2-cancel-custom:hover {
+  background-color: #b91c1c !important;
+}
