@@ -2,37 +2,33 @@ import { Routes, Route } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-// Auth
+/* ---------- Auth Pages ---------- */
 import LoginPage from "./Pages/LoginPage.jsx";
 import RegisterPage from "./Pages/RegisterPage.jsx";
 
-// Admin Layout & Pages
+/* ---------- Admin ---------- */
 import AdminLayout from "./Layout/AdminLayout.jsx";
-import DashboardPage from "./Pages/Admin/DashboardPage.jsx";
+import Index from "./Pages/Admin/DashboardPage.jsx";
 import Mahasiswa from "./Pages/Admin/Mahasiswa.jsx";
-import DetailMahasiswaPage from "./Pages/Admin/DetailMahasiswaPage.jsx";
+import RoleManagement from "./Pages/Admin/RoleManagement.jsx";
 import ProtectedRoute from "./Molekul/ProtectedRoute.jsx";
 
-// Dosen Layout & Pages
-import ProtectedDosen from "./Molekul/ProtectedDosen";
-import DosenLayout from "./Layout/DosenLayout";
-import DashboardDosen from "./Pages/Dosen/DashboardDosen";
-import ProfilDosen from "./Pages/Dosen/ProfilDosen";
+/* ---------- CRUD Modules (Admin) ---------- */
+import DosenList from "./Pages/Admin/DosenList.jsx";
+import MataKuliah from "./Pages/Admin/MataKuliah.jsx";
+import KelasList from "./Pages/Admin/KelasList.jsx";
+import KRS from "./Pages/Admin/Krs.jsx";
 
-
-// Role Management
-import RoleManagement from "./Pages/Admin/RoleManagement.jsx"; 
-
-// Dosen CRUD
-import DosenList from "./Pages/Dosen/DosenList.jsx";
-
-// Mata Kuliah CRUD
-import MataKuliah from "./Pages/MataKuliah/MataKuliah.jsx";
-
-// Mahasiswa User
+/* ---------- Mahasiswa ---------- */
 import MahasiswaLayout from "./Layout/MahasiswaLayout.jsx";
 import DashboardMahasiswa from "./Pages/Mahasiswa/DashboardMahasiswa.jsx";
 import ProtectedMahasiswa from "./Molekul/ProtectedMahasiswa.jsx";
+
+/* ---------- Dosen ---------- */
+import ProtectedDosen from "./Molekul/ProtectedDosen.jsx";
+import DosenLayout from "./Layout/DosenLayout.jsx";
+import DashboardDosen from "./Pages/Dosen/DashboardDosen.jsx";
+import ProfilDosen from "./Pages/Dosen/ProfilDosen.jsx";
 
 function App() {
   return (
@@ -41,53 +37,45 @@ function App() {
 
       <Routes>
 
-        {/* ================== AUTH ================== */}
-        <Route path="/" element={<LoginPage />} />
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/register" element={<RegisterPage />} />
+        {/* AUTH ROUTES */}
+        <Route index element={<LoginPage />} />
+        <Route path="login" element={<LoginPage />} />
+        <Route path="register" element={<RegisterPage />} />
 
-        {/* ================== ADMIN AREA ================== */}
+        {/* ADMIN ROUTES */}
         <Route element={<ProtectedRoute />}>
-          <Route path="/admin" element={<AdminLayout />}>
+          <Route path="admin" element={<AdminLayout />}>
+            <Route index element={<Index />} />               {/* Dashboard */}
+            <Route path="dashboard" element={<Index />} />    {/* Dashboard */}
 
-            {/* Dashboard */}
-            <Route index element={<DashboardPage />} />
-            <Route path="dashboard" element={<DashboardPage />} />
-
-            {/* Mahasiswa CRUD */}
+            {/* Admin CRUD */}
             <Route path="mahasiswa" element={<Mahasiswa />} />
-            <Route path="mahasiswa/:nim" element={<DetailMahasiswaPage />} />
-
-            {/* Dosen CRUD */}
             <Route path="dosen" element={<DosenList />} />
-
-            {/* Mata Kuliah CRUD */}
             <Route path="matakuliah" element={<MataKuliah />} />
+            <Route path="kelas" element={<KelasList />} />
+            <Route path="krs" element={<KRS />} />
 
-            {/* 🔥 Role Management */}
+            {/* Role Management */}
             <Route path="role-management" element={<RoleManagement />} />
-
           </Route>
         </Route>
 
-        {/* ================== MAHASISWA AREA ================== */}
+        {/* MAHASISWA ROUTES */}
         <Route element={<ProtectedMahasiswa />}>
-          <Route path="/mahasiswa" element={<MahasiswaLayout />}>
+          <Route path="mahasiswa" element={<MahasiswaLayout />}>
             <Route index element={<DashboardMahasiswa />} />
             <Route path="dashboard" element={<DashboardMahasiswa />} />
           </Route>
         </Route>
 
-        {/* ================== DOSEN AREA ================== */}
-        {/* ================== DOSEN AREA ================== */}
+        {/* DOSEN ROUTES */}
         <Route element={<ProtectedDosen />}>
-          <Route path="/dosen" element={<DosenLayout />}>
-             <Route index element={<DashboardDosen />} />
-             <Route path="dashboard" element={<DashboardDosen />} />
-             <Route path="profil" element={<ProfilDosen />} />
-  </Route>
-</Route>
-
+          <Route path="dosen" element={<DosenLayout />}>
+            <Route index element={<DashboardDosen />} />
+            <Route path="dashboard" element={<DashboardDosen />} />
+            <Route path="profil" element={<ProfilDosen />} />
+          </Route>
+        </Route>
 
       </Routes>
     </>

@@ -13,23 +13,20 @@ export default function LoginPage() {
   const handleLogin = async (e) => {
     e.preventDefault();
 
-    // Konfirmasi login
     const confirm = await confirmAction(
       "Konfirmasi Login",
       "Apakah Anda yakin ingin login?"
     );
     if (!confirm) return;
 
-    // Ambil semua user yang tersimpan
     const users = JSON.parse(localStorage.getItem("users")) || [];
 
-    // Admin default
     const defaultUsers = [
-      { 
-        email: "admin@gmail.com", 
-        password: "1234", 
+      {
+        email: "admin@gmail.com",
+        password: "1234",
         role: "admin",
-        nama: "Administrator"
+        nama: "Administrator",
       },
     ];
 
@@ -45,24 +42,25 @@ export default function LoginPage() {
       return;
     }
 
-    // Simpan user ke localStorage
     localStorage.setItem("user", JSON.stringify(user));
 
     showSuccess(`Login berhasil sebagai ${user.role}!`);
     successAlert("Login Berhasil", `Selamat datang, ${user.nama || user.role}!`);
 
-    // 🔥 Redirect berdasarkan role
     setTimeout(() => {
       if (user.role === "admin") navigate("/admin/dashboard");
       if (user.role === "mahasiswa") navigate("/mahasiswa/dashboard");
-      if (user.role === "dosen") navigate("/dosen/dashboard"); 
+      if (user.role === "dosen") navigate("/dosen/dashboard");
     }, 800);
   };
 
   return (
     <AuthLayout>
-      <Card title="Login">
-        <form onSubmit={handleLogin} className="space-y-5">
+      <Card
+        title="Login"
+        className="flex flex-col justify-center items-center py-10"
+      >
+        <form onSubmit={handleLogin} className="space-y-5 w-full max-w-sm">
           {/* Input Email */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -94,12 +92,12 @@ export default function LoginPage() {
           </div>
 
           {/* Tombol Login */}
-          <button
-            type="submit"
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 rounded-lg shadow transition-all"
-          >
-            Login
-          </button>
+             <button
+               type="submit"
+                 className="mt-6 w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg shadow-md transition-all"
+                >
+                  Login
+              </button>
 
           {/* Link ke Register */}
           <p className="text-center text-sm text-gray-600">

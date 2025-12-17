@@ -1,42 +1,34 @@
-const KEY = "data_dosen";
+const STORAGE_KEY_DOSEN = "dosen";
 
-// Ambil semua dosen
-export const getAllDosen = () => {
-  const data = localStorage.getItem(KEY);
-  return data ? JSON.parse(data) : [];
-};
+function loadDosen() {
+  return JSON.parse(localStorage.getItem(STORAGE_KEY_DOSEN)) || [];
+}
 
-// Ambil dosen berdasarkan ID
-export const getDosenById = (id) => {
-  const data = getAllDosen();
-  return data.find((d) => d.id === id);
-};
+function saveDosen(data) {
+  localStorage.setItem(STORAGE_KEY_DOSEN, JSON.stringify(data));
+}
 
-// Tambah dosen
-export const createDosen = (newData) => {
-  const data = getAllDosen();
-  data.push(newData);
-  localStorage.setItem(KEY, JSON.stringify(data));
-  return true;
-};
+export async function getAllDosen() {
+  return Promise.resolve(loadDosen());
+}
 
-// Update dosen
-export const updateDosen = (id, updatedData) => {
-  const data = getAllDosen();
-  const index = data.findIndex((d) => d.id === id);
+export async function createDosen(data) {
+  const current = loadDosen();
+  const updated = [...current, { ...data, id: Date.now() }];
+  saveDosen(updated);
+  return Promise.resolve(updated);
+}
 
-  if (index !== -1) {
-    data[index] = { ...data[index], ...updatedData };
-    localStorage.setItem(KEY, JSON.stringify(data));
-    return true;
-  }
-  return false;
-};
+export async function updateDosen(id, data) {
+  const current = loadDosen();
+  const updated = current.map(item => item.id === id ? { ...item, ...data } : item);
+  saveDosen(updated);
+  return Promise.resolve(updated);
+}
 
-// Hapus dosen
-export const deleteDosen = (id) => {
-  const data = getAllDosen();
-  const newData = data.filter((d) => d.id !== id);
-  localStorage.setItem(KEY, JSON.stringify(newData));
-  return true;
-};
+export async function deleteDosen(id) {
+  const current = loadDosen();
+  const updated = current.filter(item => item.id !== id);
+  saveDosen(updated);
+  return Promise.resolve(updated);
+}

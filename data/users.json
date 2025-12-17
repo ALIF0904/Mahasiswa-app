@@ -1,16 +1,35 @@
-[
-  {
-    "id": 1,
-    "email": "admin@gmail.com",
-    "password": "1234",
-    "role": "admin",
-    "name": "Admin Utama"
-  },
-  {
-    "id": 2,
-    "email": "mahasiswa@gmail.com",
-    "password": "1234",
-    "role": "mahasiswa",
-    "name": "Mahasiswa 1"
-  }
-]
+{
+  "users": [
+    {
+      "id": 1,
+      "email": "admin@gmail.com",
+      "password": "1234",
+      "role": "admin",
+      "name": "Admin Utama"
+    },
+    {
+      "id": 2,
+      "email": "mahasiswa@gmail.com",
+      "password": "1234",
+      "role": "mahasiswa",
+      "name": "Mahasiswa 1"
+    }
+  ],
+  "mahasiswa": [
+    {
+      "id": 1,
+      "nim": "12345",
+      "nama": "Budi"
+    },
+    {
+      "id": 2,
+      "nim": "23456",
+      "nama": "Ani"
+    },
+    {
+      "id": 3,
+      "nim": "34567",
+      "nama": "Cika"
+    }
+  ]
+}

@@ -1,87 +1,69 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
-export default function DashboardPage() {
-  const [mahasiswa, setMahasiswa] = useState([]);
+import MahasiswaCard from "../Cards/MahasiswaCard";
+import DosenCard from "../Cards/DosenCard";
+import KelasCard from "../Cards/KelasCard";
+import ChartOverview from "../../Components/Chart";
 
-  // Ambil data mahasiswa dari localStorage (key sama dengan Mahasiswa.js)
+import { useMahasiswaQuery } from "../../Utils/Queries/useMahasiswaQuery";
+import { useDosenQuery } from "../../Utils/Queries/useDosenQuery";
+import { useMataKuliahQuery } from "../../Utils/Queries/useMataKuliahQuery";
+import storage from "../../Utils/Queries/Storage";
+
+export default function Dashboard() {
+  // =========================
+  // HOOKS — HARUS DI ATAS
+  // =========================
+  const { data: mahasiswa = [], isLoading: lm } = useMahasiswaQuery();
+  const { data: dosen = [], isLoading: ld } = useDosenQuery();
+  const { data: mataKuliah = [], isLoading: lmk } = useMataKuliahQuery();
+
+  const [krs, setKrs] = useState([]);
+
   useEffect(() => {
-    const savedData = localStorage.getItem("mahasiswa");
-    if (savedData) {
-      setMahasiswa(JSON.parse(savedData));
-    }
+    const sync = () => setKrs(storage.get("krs") || []);
+    sync();
+    window.addEventListener("storage", sync);
+    return () => window.removeEventListener("storage", sync);
   }, []);
 
-  // Hitung jumlah mahasiswa aktif dan tidak aktif
-  const aktifCount = mahasiswa.filter((m) => m.status === "Aktif").length;
-  const nonAktifCount = mahasiswa.filter((m) => m.status === "Tidak Aktif").length;
+  // =========================
+  // HITUNG DATA
+  // =========================
+  const totalMahasiswa = mahasiswa.length;
+  const totalDosen = dosen.length;
+  const totalKelas = mataKuliah.length;
+
+  const chartData = useMemo(
+    () => [
+      { name: "Mahasiswa", value: totalMahasiswa },
+      { name: "Dosen", value: totalDosen },
+      { name: "Kelas", value: totalKelas },
+    ],
+    [totalMahasiswa, totalDosen, totalKelas]
+  );
+
+  // =========================
+  // BARU BOLEH CONDITIONAL RETURN
+  // =========================
+  if (lm || ld || lmk) {
+    return <p className="p-4">Loading...</p>;
+  }
 
   return (
-    <div className="p-6">
-      {/* Header */}
-      <h2 className="text-2xl font-bold mb-6 text-gray-800">
-        Selamat Datang di Dashboard Admin
-      </h2>
+    <div className="space-y-6">
+      <h1 className="text-2xl font-bold">Dashboard</h1>
 
-      {/* Statistik */}
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-8">
-        <div className="bg-green-500 text-white p-4 rounded-lg shadow text-center">
-          <h3 className="text-lg font-semibold">Mahasiswa Aktif</h3>
-          <p className="text-2xl font-bold mt-2">{aktifCount}</p>
-        </div>
-        <div className="bg-red-500 text-white p-4 rounded-lg shadow text-center">
-          <h3 className="text-lg font-semibold">Mahasiswa Tidak Aktif</h3>
-          <p className="text-2xl font-bold mt-2">{nonAktifCount}</p>
-        </div>
-        <div className="bg-blue-500 text-white p-4 rounded-lg shadow text-center">
-          <h3 className="text-lg font-semibold">Total Mahasiswa</h3>
-          <p className="text-2xl font-bold mt-2">{mahasiswa.length}</p>
-        </div>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <MahasiswaCard total={totalMahasiswa} />
+        <DosenCard total={totalDosen} />
+        <KelasCard total={totalKelas} />
       </div>
 
-      {/* Daftar Mahasiswa */}
-      <div className="bg-white p-6 rounded-lg shadow border">
-        <div className="flex items-center justify-between mb-3 border-b pb-2">
-          <h3 className="text-xl font-bold text-gray-700">Daftar Mahasiswa</h3>
-          <span className="text-sm text-gray-500">
-            Total: {mahasiswa.length} mahasiswa
-          </span>
-        </div>
-
-        <div className="overflow-x-auto">
-          <table className="w-full border text-sm text-center">
-            <thead>
-              <tr className="bg-blue-600 text-white">
-                <th className="p-2 border">NIM</th>
-                <th className="p-2 border">Nama</th>
-                <th className="p-2 border">Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              {mahasiswa.length > 0 ? (
-                mahasiswa.map((mhs, index) => (
-                  <tr key={index} className="hover:bg-gray-50 border">
-                    <td className="p-2 border">{mhs.nim}</td>
-                    <td className="p-2 border text-left pl-4">{mhs.nama}</td>
-                    <td
-                      className={`p-2 border font-semibold ${
-                        mhs.status === "Aktif" ? "text-green-600" : "text-red-600"
-                      }`}
-                    >
-                      {mhs.status}
-                    </td>
-                  </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan="3" className="p-4 text-gray-500">
-                    Belum ada data mahasiswa.
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
-      </div>
+      <ChartOverview
+        key={`${totalMahasiswa}-${totalDosen}-${totalKelas}`}
+        data={chartData}
+      />
     </div>
   );
 }

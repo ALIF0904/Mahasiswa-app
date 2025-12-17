@@ -1,45 +1,15 @@
 {
-  "users": [
-    {
-      "id": 1,
-      "username": "admin",
-      "password": "123",
-      "role": "admin"
-    },
-    {
-      "id": 2,
-      "username": "dosen1",
-      "password": "123",
-      "role": "dosen"
-    },
-    {
-      "id": 3,
-      "username": "mahasiswa1",
-      "password": "123",
-      "role": "mahasiswa"
-    }
+  "mahasiswa": [
+    { "id": 1, "nama": "Budi", "nim": "22001", "status": "Aktif" },
+    { "id": 2, "nama": "Ani", "nim": "22002", "status": "Tidak Aktif" }
   ],
-
-  "roles": [
-    {
-      "id": 1,
-      "name": "admin",
-      "permissions": [
-        "manage_users",
-        "manage_dosen",
-        "manage_mk",
-        "view_dashboard"
-      ]
-    },
-    {
-      "id": 2,
-      "name": "dosen",
-      "permissions": ["view_dashboard"]
-    },
-    {
-      "id": 3,
-      "name": "mahasiswa",
-      "permissions": ["view_dashboard"]
-    }
+  "dosen": [
+    { "id": 1, "nama": "Dr. Rudi", "nidn": "1001" }
+  ],
+  "mataKuliah": [
+    { "id": 1, "kode": "IF101", "nama": "Algoritma", "dosenId": 1 }
+  ],
+  "kelas": [
+    { "id": 1, "matkulKode": "IF101", "matkulNama": "Algoritma", "dosenNama": "Dr. Rudi" }
   ]
 }

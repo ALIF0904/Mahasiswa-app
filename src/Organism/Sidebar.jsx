@@ -30,15 +30,14 @@ export default function Sidebar() {
   };
 
   const navClass = ({ isActive }) =>
-    `flex items-center space-x-3 px-4 py-2 rounded-lg transition-all duration-200 ${
-      isActive
-        ? "bg-blue-700 text-white"
-        : "text-white/90 hover:bg-blue-700 hover:text-white"
+    `flex items-center space-x-3 px-4 py-2 rounded-lg transition-all duration-200 ${isActive
+      ? "bg-blue-700 text-white"
+      : "text-white/90 hover:bg-blue-700 hover:text-white"
     }`;
 
   return (
     <aside className="bg-blue-800 text-white min-h-screen transition-all duration-300 w-20 lg:w-64 flex flex-col justify-between shadow-lg">
-      
+
       {/* Bagian Atas */}
       <div>
         <div className="flex justify-between items-center p-4 border-b border-blue-700">
@@ -67,7 +66,18 @@ export default function Sidebar() {
             <span className="text-lg">📘</span>
             <span className="hidden lg:inline">Mata Kuliah</span>
           </NavLink>
+
+          <NavLink to="/admin/kelas" className={navClass}>
+            <span className="text-lg">🏫</span>
+            <span className="hidden lg:inline">Kelas</span>
+          </NavLink>
           
+          <NavLink to="/admin/krs" className={navClass}>
+            <span className="text-lg">📝</span>
+            <span className="hidden lg:inline">KRS</span>
+          </NavLink>
+
+
         </nav>
       </div>
 

@@ -11,6 +11,8 @@ export default function Header() {
     if (location.pathname.includes("/admin/mahasiswa")) return "Mahasiswa";
     if (location.pathname.includes("/admin/dosen")) return "Dosen";
     if (location.pathname.includes("/admin/matakuliah")) return "Mata Kuliah";
+    if (location.pathname.includes("/admin/kelas")) return "Kelas";
+    if (location.pathname.includes("/admin/krs")) return "KRS";
     return "Admin Panel";
   };
 

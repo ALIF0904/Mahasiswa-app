@@ -1,0 +1,173 @@
+import React, { useEffect, useMemo, useState } from "react";
+import { showSuccess, showError } from "../../helpers/ToastHelper";
+import Swal from "sweetalert2";
+
+export default function MataKuliahModal({
+  selected = null,
+  dosen = [],
+  mataKuliah = [],
+  onClose,
+  createMutation,
+  updateMutation,
+}) {
+  const [form, setForm] = useState({
+    kode: "",
+    nama: "",
+    sks: "",
+    dosenId: "",
+  });
+
+  const isEdit = !!selected;
+
+  // ===============================
+  // SET DOSEN YANG SUDAH DIPAKAI
+  // ===============================
+  const usedDosenIds = useMemo(() => {
+    return new Set(
+      mataKuliah
+        .filter((mk) => mk.id !== selected?.id)
+        .map((mk) => Number(mk.dosenId))
+    );
+  }, [mataKuliah, selected]);
+
+  // ===============================
+  // Edit Mode
+  // ===============================
+  useEffect(() => {
+    if (selected) {
+      setForm({
+        kode: selected.kode || "",
+        nama: selected.nama || "",
+        sks: selected.sks || "",
+        dosenId: selected.dosenId ? Number(selected.dosenId) : "",
+      });
+    } else {
+      setForm({ kode: "", nama: "", sks: "", dosenId: "" });
+    }
+  }, [selected]);
+
+  // ===============================
+  // Submit
+  // ===============================
+  const submit = async () => {
+    if (!form.kode || !form.nama || !form.sks || !form.dosenId) {
+      showError("Semua field wajib diisi");
+      return;
+    }
+
+    if (usedDosenIds.has(Number(form.dosenId))) {
+      showError("Dosen ini sudah mengajar mata kuliah lain!");
+      return;
+    }
+
+    // 🔹 Konfirmasi sebelum simpan
+    const resConfirm = await Swal.fire({
+      title: isEdit ? "Perbarui Mata Kuliah?" : "Tambah Mata Kuliah?",
+      html: `Apakah Anda yakin ingin ${isEdit ? "mengubah" : "menambahkan"} mata kuliah <b>${form.nama}</b> (Kode: ${form.kode})?`,
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonText: "Ya, simpan",
+      cancelButtonText: "Batal",
+    });
+
+    if (!resConfirm.isConfirmed) return;
+
+    const payload = {
+      kode: form.kode,
+      nama: form.nama,
+      sks: Number(form.sks),
+      dosenId: Number(form.dosenId),
+    };
+
+    try {
+      if (isEdit) {
+        updateMutation.mutate(
+          { id: selected.id, data: payload },
+          {
+            onSuccess: () => showSuccess("Mata kuliah berhasil diubah"),
+            onError: () => showError("Gagal mengubah mata kuliah"),
+          }
+        );
+      } else {
+        createMutation.mutate(payload, {
+          onSuccess: () => showSuccess("Mata kuliah berhasil ditambahkan"),
+          onError: () => showError("Gagal menambahkan mata kuliah"),
+        });
+      }
+
+      // 🔹 Swal pilihan Tambah/Edit Lagi atau Selesai
+      const resNext = await Swal.fire({
+        title: "Berhasil!",
+        html: "Apa yang ingin Anda lakukan selanjutnya?",
+        icon: "success",
+        showCancelButton: true,
+        confirmButtonText: isEdit ? "Edit Lagi" : "Tambah Lagi",
+        cancelButtonText: "Selesai",
+      });
+
+      if (resNext.isConfirmed) {
+        if (!isEdit) setForm({ kode: "", nama: "", sks: "", dosenId: "" });
+      } else {
+        onClose();
+      }
+    } catch (err) {
+      showError("Terjadi kesalahan saat menyimpan mata kuliah");
+      console.error(err);
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+      <div className="bg-white p-5 rounded w-[400px]">
+        <h3 className="font-bold mb-3">{isEdit ? "Edit" : "Tambah"} Mata Kuliah</h3>
+
+        <input
+          className="border p-2 w-full mb-2"
+          placeholder="Kode"
+          value={form.kode}
+          onChange={(e) => setForm({ ...form, kode: e.target.value })}
+        />
+
+        <input
+          className="border p-2 w-full mb-2"
+          placeholder="Nama"
+          value={form.nama}
+          onChange={(e) => setForm({ ...form, nama: e.target.value })}
+        />
+
+        <input
+          type="number"
+          className="border p-2 w-full mb-2"
+          placeholder="SKS"
+          value={form.sks}
+          onChange={(e) => setForm({ ...form, sks: e.target.value })}
+        />
+
+        <select
+          className="border p-2 w-full mb-3"
+          value={form.dosenId}
+          onChange={(e) => setForm({ ...form, dosenId: Number(e.target.value) })}
+        >
+          <option value="">Pilih Dosen</option>
+          {dosen.map((d) => {
+            const disabled = usedDosenIds.has(Number(d.id));
+            return (
+              <option key={d.id} value={d.id} disabled={disabled}>
+                {d.nama} {disabled ? "- Sudah mengajar MK lain" : ""}
+              </option>
+            );
+          })}
+        </select>
+
+        <div className="flex justify-end gap-2">
+          <button className="bg-gray-400 px-3 py-1 rounded" onClick={onClose}>
+            Batal
+          </button>
+          <button className="bg-blue-600 text-white px-3 py-1 rounded" onClick={submit}>
+            Simpan
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
