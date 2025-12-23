@@ -19,16 +19,16 @@ export function useMahasiswaQuery() {
     mutationFn: createMahasiswa,
     onSuccess: () => {
       showSuccess("Data mahasiswa berhasil ditambahkan");
-      queryClient.invalidateQueries(["mahasiswa"]);
+      queryClient.invalidateQueries({ queryKey: ["mahasiswa"] });
     },
-    onError: () => showError("Gagal menambahkan data mahasiswa"),
+    onError: (e) => showError(e.message || "Gagal menambahkan data mahasiswa"),
   });
 
   const updateMutation = useMutation({
     mutationFn: ({ id, data }) => updateMahasiswa(id, data),
     onSuccess: () => {
       showSuccess("Data mahasiswa berhasil diubah");
-      queryClient.invalidateQueries(["mahasiswa"]);
+      queryClient.invalidateQueries({ queryKey: ["mahasiswa"] });
     },
     onError: () => showError("Gagal mengubah data mahasiswa"),
   });
@@ -37,7 +37,7 @@ export function useMahasiswaQuery() {
     mutationFn: deleteMahasiswa,
     onSuccess: () => {
       showSuccess("Data mahasiswa berhasil dihapus");
-      queryClient.invalidateQueries(["mahasiswa"]);
+      queryClient.invalidateQueries({ queryKey: ["mahasiswa"] });
     },
     onError: () => showError("Gagal menghapus data mahasiswa"),
   });

@@ -45,105 +45,109 @@ export default function MataKuliah() {
 
     if (!res.isConfirmed) return;
 
-    deleteMutation.mutate(mk.id, {
-      onSuccess: () => showSuccess(`Mata kuliah "${mk.nama}" berhasil dihapus`),
-      onError: () => showError(`Gagal menghapus mata kuliah "${mk.nama}"`),
-    });
+    try {
+      await deleteMutation.mutateAsync(mk.id);
+      showSuccess(`Mata kuliah "${mk.nama}" berhasil dihapus`);
+    } catch (err) {
+      showError(`Gagal menghapus mata kuliah "${mk.nama}"`);
+      console.error(err);
+    }
   };
+
 
   if (isLoading) return <p>Loading...</p>;
   if (isError) return <p className="text-red-500">Gagal memuat</p>;
 
   return (
     <div className="p-5">
-    <div className="bg-white p-6 rounded-xl shadow-md">
-      <div className="flex justify-between items-center mb-4">
-        <h2 className="font-bold text-xl text-gray-700">Data Mata Kuliah</h2>
-        <button
-          className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded-lg"
-          onClick={() => {
-            setSelected(null);
-            setOpen(true);
-          }}
-        >
-          + Tambah
-        </button>
+      <div className="bg-white p-6 rounded-xl shadow-md">
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="font-bold text-xl text-gray-700">Data Mata Kuliah</h2>
+          <button
+            className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded-lg"
+            onClick={() => {
+              setSelected(null);
+              setOpen(true);
+            }}
+          >
+            + Tambah
+          </button>
 
-      </div>
+        </div>
 
-      {/* TABLE */}
-      <table className="w-full border border-gray-200 rounded-lg overflow-hidden">
-        <thead className="bg-blue-600 text-white">
-          <tr>
-            <th className="py-2">Kode</th>
-            <th className="py-2">Nama</th>
-            <th className="py-2">SKS</th>
-            <th className="py-2">Dosen</th>
-            <th className="py-2">Aksi</th>
-          </tr>
-        </thead>
-        <tbody>
-          {rows.length ? (
-            rows.map((m, i) => (
-              <tr key={m.id} className={i % 2 === 0 ? "bg-gray-50" : ""}>
-                <td className="text-center py-2">{m.kode}</td>
-                <td className="text-center py-2">{m.nama}</td>
-                <td className="text-center py-2">{m.sks}</td>
-                <td className="text-center py-2">
-                  {dosen.find((d) => d.id === m.dosenId)?.nama || "-"}
-                </td>
-                <td className="text-center py-2 space-x-2">
-                  <button
-                    className="bg-yellow-500 text-white px-3 py-1 rounded"
-                    onClick={() => {
-                      setSelected(m);
-                      setOpen(true);
-                    }}
-                  >
-                    Edit
-                  </button>
-                  <button
-                    className="bg-red-600 text-white px-3 py-1 rounded"
-                    onClick={() => onDelete(m)}
-                  >
-                    Hapus
-                  </button>
+        {/* TABLE */}
+        <table className="w-full border border-gray-200 rounded-lg overflow-hidden">
+          <thead className="bg-blue-600 text-white">
+            <tr>
+              <th className="py-2">Kode</th>
+              <th className="py-2">Nama</th>
+              <th className="py-2">SKS</th>
+              <th className="py-2">Dosen</th>
+              <th className="py-2">Aksi</th>
+            </tr>
+          </thead>
+          <tbody>
+            {rows.length ? (
+              rows.map((m, i) => (
+                <tr key={m.id} className={i % 2 === 0 ? "bg-gray-50" : ""}>
+                  <td className="text-center py-2">{m.kode}</td>
+                  <td className="text-center py-2">{m.nama}</td>
+                  <td className="text-center py-2">{m.sks}</td>
+                  <td className="text-center py-2">
+                    {dosen.find((d) => String(d.id) === String(m.dosenId))?.nama || "-"}
+                  </td>
+                  <td className="text-center py-2 space-x-2">
+                    <button
+                      className="bg-yellow-500 text-white px-3 py-1 rounded"
+                      onClick={() => {
+                        setSelected(m);
+                        setOpen(true);
+                      }}
+                    >
+                      Edit
+                    </button>
+                    <button
+                      className="bg-red-600 text-white px-3 py-1 rounded"
+                      onClick={() => onDelete(m)}
+                    >
+                      Hapus
+                    </button>
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan={5} className="text-center py-4 text-gray-500">
+                  Data kosong
                 </td>
               </tr>
-            ))
-          ) : (
-            <tr>
-              <td colSpan={5} className="text-center py-4 text-gray-500">
-                Data kosong
-              </td>
-            </tr>
-          )}
-        </tbody>
-      </table>
+            )}
+          </tbody>
+        </table>
 
-      <Pagination
-        currentPage={page}
-        totalPages={totalPages}
-        onPageChange={setPage}
-      />
-    </div>
+        <Pagination
+          currentPage={page}
+          totalPages={totalPages}
+          onPageChange={setPage}
+        />
+      </div>
 
-  {/* MODAL */ }
-  {
-    open && (
-      <MataKuliahModal
-        selected={selected}
-        dosen={dosen}
-        mataKuliah={mataKuliah}
-        onClose={() => {
-          setOpen(false);
-          setSelected(null);
-        }}
-        createMutation={createMutation}
-        updateMutation={updateMutation}
-      />
-    )
-  }
+      {/* MODAL */}
+      {
+        open && (
+          <MataKuliahModal
+            selected={selected}
+            dosen={dosen}
+            mataKuliah={mataKuliah}
+            onClose={() => {
+              setOpen(false);
+              setSelected(null);
+            }}
+            createMutation={createMutation}
+            updateMutation={updateMutation}
+          />
+        )
+      }
     </div >
   );
 }

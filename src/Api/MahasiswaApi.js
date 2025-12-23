@@ -1,36 +1,33 @@
-const STORAGE_KEY = "mahasiswa";
+import api from "./Api";
 
-function loadData() {
-  return JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
-}
-
-function saveData(data) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-}
-
+// GET
 export async function getAllMahasiswa() {
-  return Promise.resolve(loadData());
+  const res = await api.get("/mahasiswa");
+  return res.data;
 }
 
+// CREATE
 export async function createMahasiswa(data) {
-  const current = loadData();
-  const updated = [...current, { ...data, id: Date.now() }];
-  saveData(updated);
-  return Promise.resolve(updated);
+  const payload = {
+    nim: data.nim,
+    nama: data.nama,
+    status: data.status ?? "Aktif",
+    maxSks: data.maxSks ?? 24,
+    sksTerpakai: data.sksTerpakai ?? 0,
+  };
+
+  const res = await api.post("/mahasiswa", payload);
+  return res.data;
 }
 
-export async function updateMahasiswa(id, updatedData) {
-  const current = loadData();
-  const updated = current.map((item) =>
-    item.id === id ? { ...item, ...updatedData } : item
-  );
-  saveData(updated);
-  return Promise.resolve(updated);
+// UPDATE
+export async function updateMahasiswa(id, data) {
+  const res = await api.patch(`/mahasiswa/${id}`, data);
+  return res.data;
 }
 
+// DELETE
 export async function deleteMahasiswa(id) {
-  const current = loadData();
-  const updated = current.filter((item) => item.id !== id);
-  saveData(updated);
-  return Promise.resolve(updated);
+  const res = await api.delete(`/mahasiswa/${id}`);
+  return res.data;
 }

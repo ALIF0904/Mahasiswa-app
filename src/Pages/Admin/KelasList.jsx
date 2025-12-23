@@ -1,29 +1,19 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useMemo } from "react";
 import { useMataKuliahQuery } from "../../Utils/Queries/useMataKuliahQuery";
 import { useDosenQuery } from "../../Utils/Queries/useDosenQuery";
-import storage from "../../Utils/Queries/Storage";
+import { useKRSQuery } from "../../Utils/Queries/useKRSQuery";
 
 export default function Kelas() {
   const { data: mataKuliah = [] } = useMataKuliahQuery();
   const { data: dosen = [] } = useDosenQuery();
-
-  const [krs, setKrs] = useState([]);
-
-  useEffect(() => {
-    const sync = () => {
-      setKrs(storage.get("krs") || []);
-    };
-
-    sync();
-    window.addEventListener("storage", sync);
-    return () => window.removeEventListener("storage", sync);
-  }, []);
+  const { data: krsData = [] } = useKRSQuery(); // ambil KRS langsung
 
   const kelasList = useMemo(() => {
     return mataKuliah.map((mk) => {
+      // hitung mahasiswa unik per mata kuliah
       const mahasiswaUnik = new Set(
-        krs
-          .filter(k => Number(k.mataKuliahId) === Number(mk.id))
+        krsData
+          .filter(k => String(k.mataKuliahId) === String(mk.id))
           .map(k => k.mahasiswaId)
       );
 
@@ -35,7 +25,7 @@ export default function Kelas() {
         jumlahMahasiswa: mahasiswaUnik.size,
       };
     });
-  }, [mataKuliah, krs]);
+  }, [mataKuliah, krsData]);
 
   return (
     <div className="p-5">
@@ -61,7 +51,7 @@ export default function Kelas() {
                     <td className="text-center py-2 px-3">{k.kode}</td>
                     <td className="text-center py-2 px-3">{k.nama}</td>
                     <td className="text-center py-2 px-3">
-                      {dosen.find(d => d.id === k.dosenId)?.nama || "-"}
+                      {dosen.find(d => String(d.id) === String(k.dosenId))?.nama || "-"}
                     </td>
                     <td className="text-center py-2 px-3 font-semibold">
                       {k.jumlahMahasiswa}

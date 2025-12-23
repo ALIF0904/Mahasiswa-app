@@ -1,15 +1,211 @@
 {
   "mahasiswa": [
-    { "id": 1, "nama": "Budi", "nim": "22001", "status": "Aktif" },
-    { "id": 2, "nama": "Ani", "nim": "22002", "status": "Tidak Aktif" }
+    {
+      "id": "1",
+      "nim": "A11.2020.1390",
+      "nama": "Budi",
+      "status": "Aktif",
+      "maxSks": 24,
+      "sksTerpakai": 18
+    },
+    {
+      "id": "832a",
+      "nim": "A11.2022.1450",
+      "nama": "Fris Alvin",
+      "status": "Aktif",
+      "maxSks": 24,
+      "sksTerpakai": 0
+    },
+    {
+      "id": "da1a",
+      "nim": "A11.2022.1400",
+      "nama": "Bagus Yulianto",
+      "status": "Aktif",
+      "maxSks": 24,
+      "sksTerpakai": 6
+    },
+    {
+      "id": "8cf0",
+      "nim": "A11.2022.3404",
+      "nama": "Faris Ahmad",
+      "status": "Aktif",
+      "maxSks": 24,
+      "sksTerpakai": 0
+    },
+    {
+      "id": "a999",
+      "nim": "A11.2022.1403",
+      "nama": "Nabila Izzatil",
+      "status": "Aktif",
+      "maxSks": 24,
+      "sksTerpakai": 0
+    },
+    {
+      "id": "aefd",
+      "nim": "A11.2022.13954",
+      "nama": "M. Afif",
+      "status": "Tidak Aktif",
+      "maxSks": 24,
+      "sksTerpakai": 0
+    }
   ],
   "dosen": [
-    { "id": 1, "nama": "Dr. Rudi", "nidn": "1001" }
+    {
+      "id": "1",
+      "nidn": "1001",
+      "nama": "Dr. Rudi"
+    },
+    {
+      "id": "c5cb",
+      "nama": "Dr. Amiq Fahmi",
+      "nidn": "1990"
+    },
+    {
+      "id": "2408",
+      "nama": "Syaifur",
+      "nidn": "1998"
+    },
+    {
+      "id": "d612",
+      "nama": "Wise Herowati",
+      "nidn": "1998"
+    },
+    {
+      "id": "c8c7",
+      "nama": "Muhammad Akrom",
+      "nidn": "1998"
+    },
+    {
+      "id": "620a",
+      "nama": "Egia",
+      "nidn": "1996"
+    },
+    {
+      "id": "8883",
+      "nama": "Solichul Huda",
+      "nidn": "1998"
+    },
+    {
+      "id": "63d2",
+      "nama": "Harun Al Aziz",
+      "nidn": "1998"
+    },
+    {
+      "id": "0dab",
+      "nama": "Aprilia",
+      "nidn": "1998"
+    }
   ],
   "mataKuliah": [
-    { "id": 1, "kode": "IF101", "nama": "Algoritma", "dosenId": 1 }
+    {
+      "kode": "IF101",
+      "nama": "Algoritma",
+      "sks": 3,
+      "dosenId": 1,
+      "id": "1"
+    },
+    {
+      "kode": "A11.4605",
+      "nama": "Metodologi Penelitian",
+      "sks": 3,
+      "dosenId": "c5cb",
+      "id": "0788"
+    },
+    {
+      "id": "cc25",
+      "kode": "A11.4704",
+      "nama": "Pemrograman Sisi Klien",
+      "sks": 3,
+      "dosenId": "2408"
+    },
+    {
+      "kode": "A11.4506",
+      "nama": "Rekayasa Perangkat Lunak",
+      "sks": 3,
+      "dosenId": "620a",
+      "id": "b9c6"
+    },
+    {
+      "id": "c84e",
+      "kode": "A11.6404",
+      "nama": "Komputasi Kuantum",
+      "sks": 3,
+      "dosenId": "c8c7"
+    },
+    {
+      "id": "69a3",
+      "kode": "A11.4005",
+      "nama": "Probabilitas",
+      "sks": 3,
+      "dosenId": "63d2"
+    },
+    {
+      "id": "e66e",
+      "kode": "A11.2003",
+      "nama": "Kalkulus",
+      "sks": 3,
+      "dosenId": "d612"
+    },
+    {
+      "id": "40fb",
+      "kode": "A11.4505",
+      "nama": "Orakom",
+      "sks": 3,
+      "dosenId": "8883"
+    },
+    {
+      "id": "d39c",
+      "kode": "A11.4565",
+      "nama": "Pemrograman Web Lanjut",
+      "sks": 3,
+      "dosenId": "0dab"
+    }
   ],
-  "kelas": [
-    { "id": 1, "matkulKode": "IF101", "matkulNama": "Algoritma", "dosenNama": "Dr. Rudi" }
+  "krs": [
+    {
+      "id": "1",
+      "mahasiswaId": 1,
+      "mataKuliahId": 1
+    },
+    {
+      "id": "e32f",
+      "mahasiswaId": "1",
+      "mataKuliahId": "0788"
+    },
+    {
+      "id": "075d",
+      "mahasiswaId": "1",
+      "mataKuliahId": "cc25"
+    },
+    {
+      "id": "a7c6",
+      "mahasiswaId": "1",
+      "mataKuliahId": "b9c6"
+    },
+    {
+      "id": "1e6b",
+      "mahasiswaId": "1",
+      "mataKuliahId": "c84e"
+    },
+    {
+      "id": "1017",
+      "mahasiswaId": "1",
+      "mataKuliahId": "69a3"
+    },
+    {
+      "id": "ebf5",
+      "mahasiswaId": "1",
+      "mataKuliahId": "e66e"
+    },
+    {
+      "id": "dd41",
+      "mahasiswaId": "da1a",
+      "mataKuliahId": "0788"
+    },
+    {
+      "id": "be90",
+      "mahasiswaId": "da1a",
+      "mataKuliahId": "69a3"
+    }
   ]
 }

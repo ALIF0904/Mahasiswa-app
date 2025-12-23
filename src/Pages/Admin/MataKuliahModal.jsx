@@ -17,85 +17,68 @@ export default function MataKuliahModal({
     dosenId: "",
   });
 
-  const isEdit = !!selected;
+  const isEdit = Boolean(selected);
 
-  // ===============================
-  // SET DOSEN YANG SUDAH DIPAKAI
-  // ===============================
   const usedDosenIds = useMemo(() => {
     return new Set(
       mataKuliah
         .filter((mk) => mk.id !== selected?.id)
-        .map((mk) => Number(mk.dosenId))
+        .map((mk) => String(mk.dosenId))
     );
   }, [mataKuliah, selected]);
 
-  // ===============================
-  // Edit Mode
-  // ===============================
   useEffect(() => {
     if (selected) {
       setForm({
-        kode: selected.kode || "",
-        nama: selected.nama || "",
-        sks: selected.sks || "",
-        dosenId: selected.dosenId ? Number(selected.dosenId) : "",
+        kode: selected.kode ?? "",
+        nama: selected.nama ?? "",
+        sks: selected.sks?.toString() ?? "",
+        dosenId: selected.dosenId?.toString() ?? "",
       });
     } else {
       setForm({ kode: "", nama: "", sks: "", dosenId: "" });
     }
   }, [selected]);
 
-  // ===============================
-  // Submit
-  // ===============================
   const submit = async () => {
-    if (!form.kode || !form.nama || !form.sks || !form.dosenId) {
+    if (!form.kode.trim() || !form.nama.trim() || !form.sks || !form.dosenId) {
       showError("Semua field wajib diisi");
       return;
     }
 
-    if (usedDosenIds.has(Number(form.dosenId))) {
+    if (usedDosenIds.has(form.dosenId)) {
       showError("Dosen ini sudah mengajar mata kuliah lain!");
       return;
     }
 
-    // 🔹 Konfirmasi sebelum simpan
-    const resConfirm = await Swal.fire({
+    const confirm = await Swal.fire({
       title: isEdit ? "Perbarui Mata Kuliah?" : "Tambah Mata Kuliah?",
-      html: `Apakah Anda yakin ingin ${isEdit ? "mengubah" : "menambahkan"} mata kuliah <b>${form.nama}</b> (Kode: ${form.kode})?`,
+      html: `<b>${form.nama}</b> (Kode: ${form.kode})`,
       icon: "question",
       showCancelButton: true,
       confirmButtonText: "Ya, simpan",
       cancelButtonText: "Batal",
     });
 
-    if (!resConfirm.isConfirmed) return;
+    if (!confirm.isConfirmed) return;
 
     const payload = {
-      kode: form.kode,
-      nama: form.nama,
+      kode: form.kode.trim(),
+      nama: form.nama.trim(),
       sks: Number(form.sks),
-      dosenId: Number(form.dosenId),
+      dosenId: String(form.dosenId),
     };
 
     try {
       if (isEdit) {
-        updateMutation.mutate(
-          { id: selected.id, data: payload },
-          {
-            onSuccess: () => showSuccess("Mata kuliah berhasil diubah"),
-            onError: () => showError("Gagal mengubah mata kuliah"),
-          }
-        );
+        await updateMutation.mutateAsync({ id: selected.id, data: payload });
+        showSuccess("Mata kuliah berhasil diubah");
       } else {
-        createMutation.mutate(payload, {
-          onSuccess: () => showSuccess("Mata kuliah berhasil ditambahkan"),
-          onError: () => showError("Gagal menambahkan mata kuliah"),
-        });
+        await createMutation.mutateAsync(payload);
+        showSuccess("Mata kuliah berhasil ditambahkan");
       }
 
-      // 🔹 Swal pilihan Tambah/Edit Lagi atau Selesai
+      // 🔹 Swal setelah simpan: Edit Lagi / Tambah Lagi / Selesai
       const resNext = await Swal.fire({
         title: "Berhasil!",
         html: "Apa yang ingin Anda lakukan selanjutnya?",
@@ -106,7 +89,7 @@ export default function MataKuliahModal({
       });
 
       if (resNext.isConfirmed) {
-        if (!isEdit) setForm({ kode: "", nama: "", sks: "", dosenId: "" });
+        if (!isEdit) setForm({ kode: "", nama: "", sks: "", dosenId: "" }); // reset form tambah
       } else {
         onClose();
       }
@@ -146,14 +129,14 @@ export default function MataKuliahModal({
         <select
           className="border p-2 w-full mb-3"
           value={form.dosenId}
-          onChange={(e) => setForm({ ...form, dosenId: Number(e.target.value) })}
+          onChange={(e) => setForm({ ...form, dosenId: e.target.value })}
         >
           <option value="">Pilih Dosen</option>
           {dosen.map((d) => {
-            const disabled = usedDosenIds.has(Number(d.id));
+            const disabled = usedDosenIds.has(String(d.id));
             return (
               <option key={d.id} value={d.id} disabled={disabled}>
-                {d.nama} {disabled ? "- Sudah mengajar MK lain" : ""}
+                {d.nama} {disabled ? "(Sudah mengajar MK lain)" : ""}
               </option>
             );
           })}

@@ -1,136 +1,56 @@
-function loadKRS() {
-  return JSON.parse(localStorage.getItem("krs")) || [];
-}
-function saveKRS(data) {
-  localStorage.setItem("krs", JSON.stringify(data));
-}
+import api from "./Api";
 
-function loadMahasiswa() {
-  return JSON.parse(localStorage.getItem("mahasiswa")) || [];
-}
-function saveMahasiswa(data) {
-  localStorage.setItem("mahasiswa", JSON.stringify(data));
-}
+// Update SKS Mahasiswa
+async function updateMahasiswaSKS(mahasiswaId) {
+  const [krsRes, matkulRes] = await Promise.all([
+    api.get("/krs"),
+    api.get("/mataKuliah")
+  ]);
 
-function updateMahasiswaSKS(mahasiswaId) {
-  const krs = loadKRS();
-  const mahasiswa = loadMahasiswa();
-  const matkul = JSON.parse(localStorage.getItem("matakuliah")) || [];
+  const totalSks = krsRes.data
+    .filter(k => k.mahasiswaId === mahasiswaId)
+    .reduce((sum, k) => sum + (matkulRes.data.find(m => m.id === k.mataKuliahId)?.sks || 0), 0);
 
-  const totalSks = krs
-    .filter((k) => k.mahasiswaId === Number(mahasiswaId))
-    .reduce((sum, k) => {
-      const mk = matkul.find((m) => m.id === k.mataKuliahId);
-      return sum + (mk?.sks || 0);
-    }, 0);
-
-  const updatedMahasiswa = mahasiswa.map((m) =>
-    m.id === Number(mahasiswaId) ? { ...m, sksTerpakai: totalSks } : m
-  );
-
-  saveMahasiswa(updatedMahasiswa);
+  await api.patch(`/mahasiswa/${mahasiswaId}`, { sksTerpakai: totalSks });
 }
 
-// ================================
-// GET ALL KRS
-// ================================
 export async function getAllKRS() {
-  const krs = loadKRS();
-  const mahasiswa = loadMahasiswa();
-  const matakuliah = JSON.parse(localStorage.getItem("matakuliah")) || [];
-  const dosen = JSON.parse(localStorage.getItem("dosen")) || [];
+  const [krsRes, mhsRes, mkRes, dosenRes] = await Promise.all([
+    api.get("/krs"),
+    api.get("/mahasiswa"),
+    api.get("/mataKuliah"),
+    api.get("/dosen")
+  ]);
 
-  return krs.map((k) => {
-    const mhs = mahasiswa.find((m) => m.id === Number(k.mahasiswaId));
-    const mk = matakuliah.find((mk) => mk.id === Number(k.mataKuliahId));
-    const dsn = dosen.find((d) => d.id === mk?.dosenId);
-
-    return {
-      ...k,
-      mahasiswaNama: mhs?.nama || "-",
-      mataKuliahNama: mk?.nama || "-",
-      sks: mk?.sks || 0,
-      dosenNama: dsn?.nama || "-",
-    };
+  return krsRes.data.map(k => {
+    const mhs = mhsRes.data.find(m => m.id === k.mahasiswaId);
+    const mk = mkRes.data.find(m => m.id === k.mataKuliahId);
+    const dsn = dosenRes.data.find(d => d.id === mk?.dosenId);
+    return { ...k, mahasiswaNama: mhs?.nama, mataKuliahNama: mk?.nama, sks: mk?.sks, dosenNama: dsn?.nama };
   });
 }
 
-// ================================
-// CREATE KRS
-// ================================
-export async function createKRS(newData) {
-  const krs = loadKRS();
-  const mahasiswa = loadMahasiswa();
-  const matkul = JSON.parse(localStorage.getItem("matakuliah")) || [];
+export async function createKRS(data) {
+  const [krsRes, mhsRes, mkRes] = await Promise.all([
+    api.get("/krs"),
+    api.get(`/mahasiswa/${data.mahasiswaId}`),
+    api.get(`/mataKuliah/${data.mataKuliahId}`)
+  ]);
 
-  const exists = krs.some(
-    (k) =>
-      k.mahasiswaId === Number(newData.mahasiswaId) &&
-      k.mataKuliahId === Number(newData.mataKuliahId)
-  );
+  const exists = krsRes.data.some(k => k.mahasiswaId === data.mahasiswaId && k.mataKuliahId === data.mataKuliahId);
   if (exists) throw new Error("Mahasiswa sudah mengambil mata kuliah ini");
 
-  const mhs = mahasiswa.find((m) => m.id === Number(newData.mahasiswaId));
-  const mk = matkul.find((m) => m.id === Number(newData.mataKuliahId));
-  const totalSks = (mhs?.sksTerpakai || 0) + (mk?.sks || 0);
+  const totalSks = (mhsRes.data.sksTerpakai || 0) + (mkRes.data.sks || 0);
+  if (totalSks > mhsRes.data.maxSks) throw new Error("Melebihi batas SKS mahasiswa");
 
-  if (totalSks > mhs.maxSks) throw new Error("Melebihi batas SKS mahasiswa");
-
-  const newId = krs.length > 0 ? Math.max(...krs.map((k) => k.id)) + 1 : 1;
-  const newKRS = { id: newId, ...newData };
-
-  krs.push(newKRS);
-  saveKRS(krs);
-
-  updateMahasiswaSKS(newData.mahasiswaId);
-  return newKRS;
+  const res = await api.post("/krs", data);
+  await updateMahasiswaSKS(data.mahasiswaId);
+  return res.data;
 }
 
-// ================================
-// UPDATE KRS
-// ================================
-export async function updateKRS(id, updatedData) {
-  let krs = loadKRS();
-  const mahasiswa = loadMahasiswa();
-  const matkul = JSON.parse(localStorage.getItem("matakuliah")) || [];
-
-  const exists = krs.some(
-    (k) =>
-      k.mahasiswaId === Number(updatedData.mahasiswaId) &&
-      k.mataKuliahId === Number(updatedData.mataKuliahId) &&
-      k.id !== Number(id)
-  );
-  if (exists) throw new Error("Mahasiswa sudah mengambil mata kuliah ini");
-
-  const mhs = mahasiswa.find((m) => m.id === Number(updatedData.mahasiswaId));
-  const mk = matkul.find((m) => m.id === Number(updatedData.mataKuliahId));
-  const totalSks = krs
-    .filter((k) => k.mahasiswaId === Number(updatedData.mahasiswaId) && k.id !== Number(id))
-    .reduce((sum, k) => {
-      const m = matkul.find((m) => m.id === k.mataKuliahId);
-      return sum + (m?.sks || 0);
-    }, 0) + (mk?.sks || 0);
-
-  if (totalSks > mhs.maxSks) throw new Error("Melebihi batas SKS mahasiswa");
-
-  krs = krs.map((k) => (k.id === Number(id) ? { ...k, ...updatedData } : k));
-  saveKRS(krs);
-
-  updateMahasiswaSKS(updatedData.mahasiswaId);
-  return updatedData;
-}
-
-// ================================
-// DELETE KRS
-// ================================
 export async function deleteKRS(id) {
-  const krs = loadKRS();
-  const k = krs.find((k) => k.id === Number(id));
-  if (!k) return false;
-
-  const filtered = krs.filter((k) => k.id !== Number(id));
-  saveKRS(filtered);
-
-  updateMahasiswaSKS(k.mahasiswaId);
-  return true;
+  const { data } = await api.get(`/krs/${id}`);
+  await api.delete(`/krs/${id}`);
+  await updateMahasiswaSKS(data.mahasiswaId);
+  return id;
 }

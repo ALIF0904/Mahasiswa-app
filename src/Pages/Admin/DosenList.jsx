@@ -33,10 +33,11 @@ export default function DosenList() {
 
     if (!res.isConfirmed) return;
 
-    deleteMutation.mutate(d.nidn, {
+    deleteMutation.mutate(d.id, {  // ⬅️ pakai d.id, bukan d.nidn
       onSuccess: () => showSuccess(`Dosen "${d.nama}" berhasil dihapus`),
       onError: () => showError(`Gagal menghapus dosen "${d.nama}"`),
     });
+
   };
 
   if (isLoading) return <p>Loading...</p>;
